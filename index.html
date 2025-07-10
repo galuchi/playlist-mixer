@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlist Mixer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="app">
+        <h1>Playlist Mixer</h1>
+        <p>A funcionalidade que faltava no Spotify.</p>
+
+        <hr>
+
+        <div class="selecao-fontes">
+            <h2>1. Selecione as fontes</h2>
+            <div class="seletor">
+                <label for="fonte1">Fonte 1:</label>
+                <select id="fonte1" v-model="fonte1Selecionada">
+                    <option disabled value="">-- Escolha uma playlist --</option>
+                    <option v-for="(playlist, chave) in fontes" :value="chave">
+                        {{ playlist.nome }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="seletor">
+                <label for="fonte2">Fonte 2:</label>
+                <select id="fonte2" v-model="fonte2Selecionada">
+                    <option disabled value="">-- Escolha uma playlist --</option>
+                    <option v-for="(playlist, chave) in fontes" :value="chave">
+                        {{ playlist.nome }}
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="parametrizacao" v-if="fonte1Selecionada || fonte2Selecionada">
+            <hr>
+            <h2>2. Parametrize as músicas</h2>
+            <div class="listas-musicas">
+                <div class="lista" v-if="fonte1Selecionada">
+                    <h3>{{ fontes[fonte1Selecionada].nome }}</h3>
+                    <ul>
+                        <li v-for="musica in musicasFonte1" :key="musica.id">
+                            <span>{{ musica.titulo }} - {{ musica.artista }}</span>
+                            <div class="controles">
+                                <label>Peso: <input type="number" min="1" v-model="getParametros(musica.id).peso"></label>
+                                <label><input type="checkbox" v-model="getParametros(musica.id).obrigatorio"> Obrigatória</label>
+                                <label><input type="checkbox" v-model="getParametros(musica.id).podeRepetir"> Pode Repetir</label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="lista" v-if="fonte2Selecionada">
+                    <h3>{{ fontes[fonte2Selecionada].nome }}</h3>
+                    <ul>
+                        <li v-for="musica in musicasFonte2" :key="musica.id">
+                            <span>{{ musica.titulo }} - {{ musica.artista }}</span>
+                            <div class="controles">
+                                <label>Peso: <input type="number" min="1" v-model="getParametros(musica.id).peso"></label>
+                                <label><input type="checkbox" v-model="getParametros(musica.id).obrigatorio"> Obrigatória</label>
+                                <label><input type="checkbox" v-model="getParametros(musica.id).podeRepetir"> Pode Repetir</label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="geracao" v-if="fonte1Selecionada || fonte2Selecionada">
+            <hr>
+            <h2>3. Gerar Playlist</h2>
+            <div class="controle-geracao">
+                <label for="tamanho">Tamanho da Playlist:</label>
+                <input type="number" id="tamanho" min="1" v-model="tamanhoPlaylist">
+                <button @click="gerarPlaylist">Gerar!</button>
+            </div>
+        </div>
+
+        <div class="resultado" v-if="playlistGerada.length > 0">
+            <hr>
+            <h2>Sua Nova Playlist!</h2>
+
+            <div class="aviso" v-if="avisoGeracao">
+                <p>{{ avisoGeracao }}</p>
+            </div>
+
+            <ol>
+                <li v-for="(musica, index) in playlistGerada" :key="index">
+                    {{ musica.titulo }} - <strong>{{ musica.artista }}</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="script.js"></script>
+</body>
+</html>
